@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Reservation System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2em; background-color: #f9f9f9; text-align: center; }
+        h1 { color: #2c3e50; }
+        .btn { display: inline-block; margin: 1em; padding: 1em 2em; font-size: 1.2em; text-decoration: none; color: white; background-color: #3498db; border-radius: 5px; }
+        .btn:hover { background-color: #2980b9; }
+        form { margin-top: 2em; }
+        input[type="number"] { padding: 0.5em; font-size: 1em; width: 200px; border-radius: 5px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Book Reservation Backend</h1>
+    <a href="/books" class="btn">View All Books</a>
+    <a href="/add-book" class="btn">Add New Book</a>
+    <h2>Reserve a Book</h2>
+    <form action="/reservations" method="post">
+        <input type="number" name="book_id" placeholder="Enter Book ID" required />
+        <br><br>
+        <button type="submit" class="btn">Reserve Book</button>
+    </form>
+</body>
+</html>

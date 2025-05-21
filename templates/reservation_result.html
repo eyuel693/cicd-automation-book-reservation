@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reservation Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2em; background-color: #f9f9f9; text-align: center; }
+        h2 { color: #2c3e50; }
+        .error { color: red; }
+        .btn { display: inline-block; margin-top: 1em; padding: 0.7em 1.5em; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; }
+        .btn:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+        <a href="/" class="btn">← Back</a>
+    {% else %}
+        <h2>✅ Book Reserved!</h2>
+        <p>Title: {{ book.title }}</p>
+        <p>Author: {{ book.author }}</p>
+        <a href="/books" class="btn">View All Books</a>
+    {% endif %}
+</body>
+</html>
