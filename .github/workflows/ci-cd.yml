@@ -1,3 +1,4 @@
+```yaml
 name: CI/CD Pipeline
 
 on:
@@ -6,18 +7,48 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  PYTHON_VERSION: '3.12'
+  DATABASE_URL: sqlite:///:memory:
+
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    - name: Run linting
+      run: |
+        flake8 . --max-line-length=88 --extend-ignore=E203
+
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12']
+      fail-fast: false
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.12
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: requirements.txt
 
     - name: Install dependencies
       run: |
@@ -26,13 +57,19 @@ jobs:
 
     - name: Run tests
       env:
-        DATABASE_URL: sqlite:///:memory:
         PYTHONPATH: ${{ github.workspace }}
       run: |
-        pytest tests/ -v
+        pytest tests/ -v --cov=app --cov-report=xml
+
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
+      if: success()
 
   deploy:
-    needs: test
+    needs: [lint, test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
@@ -45,7 +82,14 @@ jobs:
         RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
       run: |
-        curl -X POST \
+        response=$(curl -s -o response.json -w "%{http_code}" -m 30 \
+        -X POST \
         -H "Authorization: Bearer $RENDER_API_KEY" \
         -H "Content-Type: application/json" \
-        https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys
+        https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys)
+        cat response.json
+        if [ "$response" != "201" ]; then
+          echo "Deployment failed with status $response"
+          exit 1
+        fi
+```
