@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline - Book Reservation Backend
 
 on:
   push:
@@ -34,7 +34,11 @@ jobs:
           ls -l
           pip list
 
-      - name: Run tests
+      - name: Run linter (Pylint)
+        run: |
+          pylint app/
+
+      - name: Run tests with pytest
         env:
           DATABASE_URL: sqlite:///:memory:
           PYTHONPATH: ${{ github.workspace }}
@@ -50,7 +54,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Render
+      - name: Notify Deployment Started
+        run: echo "✅ All tests passed. Starting deployment..."
+
+      - name: Deploy to Render (Example)
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
