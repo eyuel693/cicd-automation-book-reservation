@@ -36,9 +36,11 @@ jobs:
 
       - name: Run linter (Pylint)
         run: |
-          pylint app/
+          pylint app.py
 
-      
+      - name: Run tests
+        run: |
+          pytest
 
   deploy:
     needs: test
@@ -50,7 +52,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Notify Deployment Started
-        run: echo " All tests passed. Starting deployment..."
+        run: echo "All tests passed. Starting deployment..."
 
       - name: Deploy to Render (Example)
         env:
@@ -61,7 +63,7 @@ jobs:
             -X POST \
             -H "Authorization: Bearer $RENDER_API_KEY" \
             -H "Content-Type: application/json" \
-            https://api.render.com/v1/services/ $RENDER_SERVICE_ID/deploys)
+            https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys)
 
           cat response.json
 
