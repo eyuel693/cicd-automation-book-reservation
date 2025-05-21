@@ -6,10 +6,10 @@ from app.models import Book
 def app():
     app = create_app()
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Ensure in-memory DB
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  
     with app.app_context():
-        db.drop_all()  # Drop any existing tables
-        db.create_all()  # Create fresh tables
+        db.drop_all()  
+        db.create_all()  
     yield app
     with app.app_context():
         db.drop_all()
@@ -21,7 +21,7 @@ def client(app):
 
 
 def test_get_books_empty(client):
-    # Set headers to accept JSON
+
     response = client.get('/books', headers={'Accept': 'application/json'})
     assert response.status_code == 200
     assert response.is_json
@@ -29,10 +29,8 @@ def test_get_books_empty(client):
     assert len(data) == 0
 
 def test_get_books_with_data(client):
-    # Add a book
     client.post('/books', json={'title': 'Test Book', 'author': 'Jane Doe'})
 
-    # Get all books as JSON
     response = client.get('/books', headers={'Accept': 'application/json'})
     assert response.status_code == 200
     assert response.is_json

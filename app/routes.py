@@ -4,7 +4,6 @@ from . import db
 
 bp = Blueprint('main', __name__)
 
-# HTML Routes
 @bp.route('/')
 def index():
     return render_template('index.html')
@@ -67,7 +66,6 @@ def reserve_book():
         return jsonify({'message': 'Book reserved', 'book': book.to_dict()})
     return render_template('reservation_result.html', book=book)
 
-# API Routes
 @bp.route('/books', methods=['GET'])
 def api_get_books():
     books = db.session.execute(db.select(Book)).scalars().all()
