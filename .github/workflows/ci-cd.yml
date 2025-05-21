@@ -29,3 +29,10 @@ jobs:
     - name: Run tests
       run: |
         pytest tests/ -v
+
+    - name: Test API endpoints
+      run: |
+        python3 app.py &
+        sleep 5
+        curl http://localhost:5000
+        kill %1
