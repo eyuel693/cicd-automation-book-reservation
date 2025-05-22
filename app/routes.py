@@ -89,4 +89,5 @@ def api_reserve_book():
         return jsonify({'message': 'Book already reserved'}), 400
     book.reserved = True
     db.session.commit()
-return jsonify({'message': 'Book reserved', 'book': book.to_dict()})
+    return jsonify({'message': 'Book reserved', 'book': book.to_dict()})
+    
